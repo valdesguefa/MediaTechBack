@@ -1,9 +1,12 @@
-package com.fstg.demo.service;
+package com.fstg.demo.service.impl;
 
 import com.fstg.demo.DAO.ClientDAO;
 import com.fstg.demo.DTO.ClientRequestDTO;
 import com.fstg.demo.DTO.ClientResponseDTO;
 import com.fstg.demo.models.ClientEntity;
+import com.fstg.demo.service.ClientService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,10 @@ public class ClientServiceImpl implements ClientService {
     public ClientResponseDTO save(ClientRequestDTO clientRequestDTO) {
 
         ClientEntity clientEntity = modelMapper.map(clientRequestDTO, ClientEntity.class);
+        ClientEntity clientEntity1 = clientDAO.findByNom(clientEntity.getNom());
+        if(clientEntity1 != null) {
+            throw new EntityExistsException("This client Already exist");
+        }
         ClientEntity savedEntity = clientDAO.save(clientEntity);
         return modelMapper.map(savedEntity, ClientResponseDTO.class);
 
@@ -35,7 +42,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientResponseDTO findById(Integer id) {
-        ClientEntity clientEntity = clientDAO.findById(id).orElseThrow(()-> new RuntimeException("Client Not Found"));
+        ClientEntity clientEntity = clientDAO.findById(id).orElseThrow(()-> new EntityNotFoundException("Client Not Found"));
         return modelMapper.map(clientEntity, ClientResponseDTO.class);
     }
 
@@ -43,7 +50,14 @@ public class ClientServiceImpl implements ClientService {
     public ClientResponseDTO findByNom(String nom) {
 
         ClientEntity clientEntity = clientDAO.findByNom(nom);//.orElseThrow(()-> new RuntimeException("Client Not Found"));
-        return modelMapper.map(clientEntity, ClientResponseDTO.class);
+        if (clientEntity == null) {
+            throw new EntityNotFoundException("client not found");
+           // return null;
+        }
+        else {
+            return modelMapper.map(clientEntity, ClientResponseDTO.class);
+        }
+
     }
 
     @Override
@@ -59,11 +73,8 @@ public class ClientServiceImpl implements ClientService {
             clientDAO.deleteById(id);
         }
         else {
-            throw new NotFoundException("Client Not found");
+            throw new EntityNotFoundException("Client Not found");
         }
-        // clientDAO.deleteById(id);
-       // ClientEntity clientEntity = clientDAO.findById(id).get();
-       // clientDAO.delete(clientEntity);
 
     }
 
@@ -77,7 +88,7 @@ public class ClientServiceImpl implements ClientService {
             ClientEntity client = this.clientDAO.save(clientEntity1);
             return modelMapper.map(client, ClientResponseDTO.class);
         } else {
-            throw new NotFoundException("Client Not found");
+            throw new EntityNotFoundException("Client Not found");
         }
     }
 

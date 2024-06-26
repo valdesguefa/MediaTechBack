@@ -4,8 +4,11 @@ import com.fstg.demo.DTO.ClientRequestDTO;
 import com.fstg.demo.DTO.ClientResponseDTO;
 import com.fstg.demo.service.ClientService;
 import javassist.NotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,15 +23,15 @@ public class ClientController {
     }
 
     @GetMapping("")
-    public List<ClientResponseDTO> getClient() {
-        return clientService.findAll();
+    public ResponseEntity<List<ClientResponseDTO>> getClient() {
+        return new ResponseEntity<>(clientService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ClientResponseDTO save(@RequestBody() ClientRequestDTO clientRequestDTO){
-        return clientService.save(clientRequestDTO);
+    public ResponseEntity<ClientResponseDTO> save(@Valid @RequestBody() ClientRequestDTO clientRequestDTO){
+        ClientResponseDTO clientResponseDTO  = clientService.save(clientRequestDTO);
+        return new ResponseEntity<>(clientResponseDTO, HttpStatus.CREATED);
     }
-
 
     @PutMapping("/{id}")
     public ClientResponseDTO updateClient(@RequestBody() ClientRequestDTO clientRequestDTO, @PathVariable Integer id) throws NotFoundException {
@@ -36,19 +39,20 @@ public class ClientController {
     }
 
     @GetMapping("/id/{id}")
-    public ClientResponseDTO findById(@PathVariable Integer id){
-        return clientService.findById(id);
+    public ResponseEntity<ClientResponseDTO> findById(@PathVariable Integer id){
+        return ResponseEntity.accepted().body(clientService.findById(id));
     }
 
     @GetMapping("/nom/{nom}")
-    public ClientResponseDTO findByName(@PathVariable String nom){
+    public ClientResponseDTO findByName(@Valid @PathVariable String nom){
         return clientService.findByNom((nom));
     }
 
-//    @DeleteMapping("/id/{id}")
-//    public void deleteById(@PathVariable("id") Integer id){
-//        return clientService.delete(id);
-//    }
+    @DeleteMapping("delete/id/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable("id") Integer id) throws NotFoundException {
+        clientService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }
