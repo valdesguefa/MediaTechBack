@@ -28,7 +28,7 @@ public class ClientController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ClientResponseDTO> save(@Valid @RequestBody() ClientRequestDTO clientRequestDTO){
+    public ResponseEntity<ClientResponseDTO> save(@RequestBody() @Valid ClientRequestDTO clientRequestDTO){
         ClientResponseDTO clientResponseDTO  = clientService.save(clientRequestDTO);
         return new ResponseEntity<>(clientResponseDTO, HttpStatus.CREATED);
     }

@@ -3,9 +3,9 @@ package com.fstg.demo.service.impl;
 import com.fstg.demo.DAO.ClientDAO;
 import com.fstg.demo.DTO.ClientRequestDTO;
 import com.fstg.demo.DTO.ClientResponseDTO;
+import com.fstg.demo.exception.EntityAlreadyExistException;
 import com.fstg.demo.models.ClientEntity;
 import com.fstg.demo.service.ClientService;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
@@ -33,7 +33,7 @@ public class ClientServiceImpl implements ClientService {
         ClientEntity clientEntity = modelMapper.map(clientRequestDTO, ClientEntity.class);
         ClientEntity clientEntity1 = clientDAO.findByNom(clientEntity.getNom());
         if(clientEntity1 != null) {
-            throw new EntityExistsException("This client Already exist");
+            throw new EntityAlreadyExistException("This client Already exist :_(");
         }
         ClientEntity savedEntity = clientDAO.save(clientEntity);
         return modelMapper.map(savedEntity, ClientResponseDTO.class);
