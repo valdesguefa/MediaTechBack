@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -29,6 +30,7 @@ public class ClientEntity implements Serializable{
 
 
 //    @Column(name = "nom")
+    @Valid
     @Size(max = 30, message="le nom doit contenir moin de 15 lettres")
     @Size(min = 3, message="le nom doit contenir plus de 3 lettres")
     @NotBlank(message="vous devez entrer un nom valide")
@@ -36,6 +38,7 @@ public class ClientEntity implements Serializable{
     private String nom;
 
 
+    @Valid
     @NotBlank(message="vous devez entrer un prenom valide")
     @NotNull(message = "The last name of client is required.")
 //    @Column(name = "prenom")
